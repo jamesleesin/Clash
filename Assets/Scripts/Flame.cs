@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 // fire has no team, will burn everything in aoe
 public class Flame : NetworkBehaviour {
 	private float destroyTimer = 10f;
+	private const int flameDamage = 3;
 	float interval = 0.4f;
 	float timer = 0;
 	
@@ -27,10 +28,10 @@ public class Flame : NetworkBehaviour {
     	if (timer > interval){
 	        if (other.gameObject.tag == "Unit")
 	        {
-	            other.gameObject.transform.GetComponent<Unit>().TakeDamage(1);
+	            other.gameObject.transform.GetComponent<Unit>().TakeDamage(flameDamage, 1);
 	        }
 	        else if (other.gameObject.tag == "Building"){
-	            other.gameObject.transform.parent.GetComponent<Building>().TakeDamage(1);
+	            other.gameObject.transform.parent.GetComponent<Building>().TakeDamage(flameDamage, 1);
 			}
 			timer = 0;
 		}

@@ -18,15 +18,18 @@ public class Spawn : NetworkBehaviour {
 
 	private int DELAYBETWEENWAVES = 15;
 
+	// upgrade bool array
+	private bool[] upgradesAcquired = {false, false, false, false};
+
 	// List keeping track of how many of each unit to spawn. Order:
 	// Knight, KungFuFighter, ..
 	// Team one and two lists are inverted to preserve order of spawns
 	private int[] numOfEachUnitToSpawn = {0, 0, 0, 0, 0, 0, 0, 0};
-	private int[] unitPrices = {10, 20, 15, 40, 50, 10, 50, 50};
+	private int[] unitPrices = {60, 50, 90, 150, 200, 200, 270, 300};
 	public Unit[] unitPrefabs;
-	private string[] unitNames = {"Knight", "KungFuFighter", "Archer", "Hammer", "Swordsman", "Mage", "DualSwords", "Sorceress"};
+	private string[] unitNames = {"Knight", "KungFuFighter", "Archer", "Swordsman", "DualSwords", "Mage", "Hammer", "Sorceress"};
 
-	private int goldGainPerTick = 1;
+	private int baseGoldGainPerTick = 1;
 
 	public GameObject[] componentsToDisable;
 
@@ -138,7 +141,7 @@ public class Spawn : NetworkBehaviour {
 		}
 	}*/
 
-	//////////// Commands //////////////
+	// -------------------------- Commands ---------------------//
 	[Command]
 	public void CmdUpdateTimeUntilNextWave(){
 		if (timeUntilNextWave > 0){
@@ -169,8 +172,26 @@ public class Spawn : NetworkBehaviour {
 	[Command]
 	// add player gold
 	public void CmdGainTimeGold(){
-		playerGold += goldGainPerTick;
+		playerGold += baseGoldGainPerTick;
+		// first 4 upgrades are for gold
+		for (int i = 0; i <= 3; i++){
+			if (upgradesAcquired[i])
+				playerGold += 1;
+		}
 	}
+
+	[Command]
+	// upgrade =s
+	public void CmdPurchaseUpgrade(int index, int cost){
+		// if can buy 
+		if (!upgradesAcquired[index] && playerGold >= cost){
+			playerGold -= cost;
+			upgradesAcquired[index] = true;
+		}
+	}
+
+
+	// -------------------- Utility functions -----------------------//
 
 	// return true if player has enough gold for spawn, else false
 	public bool EnoughGoldForSpawn(int amt){

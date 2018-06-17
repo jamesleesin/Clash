@@ -11,6 +11,8 @@ public class Building : NetworkBehaviour {
 	private int hp;
 	private int MAXHP = 1000;
 	public Transform hpDisplay;
+	private int PHYSICALRESIST = 1;
+	private int MAGICRESIST = 1;
 
 	// Use this for initialization
 	void Start()
@@ -31,13 +33,13 @@ public class Building : NetworkBehaviour {
 	/*
 	* Take amount damage from a source
 	*/
-	public void TakeDamage(int amount){
+	public void TakeDamage(int amount, int damageType){
 		if (!isServer){
 			return;
 		}
 
 		if (hp > 0){
-			hp -= amount;
+			hp -= amount - (damageType == 0 ? PHYSICALRESIST : MAGICRESIST);
 			Debug.Log("take " + amount + " damage");
 			if (hp <= 0){
 				// game over for this team. Destroy the building from the local HUD

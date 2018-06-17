@@ -6,13 +6,13 @@ using UnityEngine.Networking;
 public class Meteor : NetworkBehaviour {
 	private int team;
 	// for layermasks, dont change
-	private int layerTeamOne = 8;
-	private int layerTeamTwo = 9;
+	//private int layerTeamOne = 8;
+	//private int layerTeamTwo = 9;
 
-	private const int meteorDamage = 2;
+	private const int meteorDamage = 5;
 	private bool active = false;
 	private float destroyTimer = 10f;
-	Quaternion initialRot;
+	//Quaternion initialRot;
 
 	public Flame flamePrefab;
 
@@ -31,7 +31,7 @@ public class Meteor : NetworkBehaviour {
 			gameObject.layer = 11;
 		}
 		active = true;
-		initialRot = transform.rotation;
+		//initialRot = transform.rotation;
 		realPosition = transform.position;
 		realRotation = transform.rotation;
 	}
@@ -92,15 +92,15 @@ public class Meteor : NetworkBehaviour {
     {
     	// on collision spawn a flame at point of contact
     	if (active){
-	        ContactPoint contact = collision.contacts[0];
+	        //ContactPoint contact = collision.contacts[0];
 	        if (collision.gameObject.tag == "Unit"){
 		        if (collision.gameObject != null){
-			    	collision.gameObject.transform.GetComponent<Unit>().TakeDamage(meteorDamage);
+			    	collision.gameObject.transform.GetComponent<Unit>().TakeDamage(meteorDamage, 1);
 				}
 			}
 			else if (collision.gameObject.tag == "Building"){
 		        if (collision.gameObject != null){
-		        	collision.gameObject.transform.parent.GetComponent<Building>().TakeDamage(meteorDamage);
+		        	collision.gameObject.transform.parent.GetComponent<Building>().TakeDamage(meteorDamage, 1);
 				}
 			}
 			CreateFlame();

@@ -6,15 +6,15 @@ using UnityEngine.Networking;
 public class Arrow : NetworkBehaviour {
 	private int team;
 	// for layermasks, dont change
-	private int layerTeamOne = 8;
-	private int layerTeamTwo = 9;
+	//private int layerTeamOne = 8;
+	//private int layerTeamTwo = 9;
 
-	private const int arrowDamage = 1;
+	private const int arrowDamage = 3;
 	private bool active = false;
 	private float destroyTimer = 10f;
 
 	public Arrow arrowPrefab;
-	Quaternion initialRot;
+	//Quaternion initialRot;
 
 	// Network lerping
 	[SyncVar(hook="OnChangePosition")]
@@ -33,7 +33,7 @@ public class Arrow : NetworkBehaviour {
 			gameObject.layer = 11;
 		}
 		active = true;
-		initialRot = transform.rotation;
+		//initialRot = transform.rotation;
 		realPosition = transform.position;
 		realRotation = transform.rotation;
 	}
@@ -103,15 +103,15 @@ public class Arrow : NetworkBehaviour {
 	void OnCollisionEnter(Collision collision)
     {
     	if (active){
-	        ContactPoint contact = collision.contacts[0];
+	        //ContactPoint contact = collision.contacts[0];
 	        if (collision.gameObject.tag == "Unit"){
 		        if (collision.gameObject != null){
-			    	collision.gameObject.transform.GetComponent<Unit>().TakeDamage(arrowDamage);
+			    	collision.gameObject.transform.GetComponent<Unit>().TakeDamage(arrowDamage, 0);
 				}
 			}
 			else if (collision.gameObject.tag == "Building"){
 		        if (collision.gameObject != null){
-			    	collision.gameObject.transform.parent.GetComponent<Building>().TakeDamage(arrowDamage);
+			    	collision.gameObject.transform.parent.GetComponent<Building>().TakeDamage(arrowDamage, 0);
 				}
 			}
 	        active = false;

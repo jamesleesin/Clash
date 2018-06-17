@@ -6,14 +6,14 @@ using UnityEngine.Networking;
 public class Icicle : NetworkBehaviour {
 	private int team;
 	// for layermasks, dont change
-	private int layerTeamOne = 8;
-	private int layerTeamTwo = 9;
+	//private int layerTeamOne = 8;
+	//private int layerTeamTwo = 9;
 
-	private const int icicleDamage = 1;
+	private const int icicleDamage = 7;
 	private bool active = false;
 	private float destroyTimer = 10f;
 
-	Quaternion initialRot;
+	//Quaternion initialRot;
 
 	[SyncVar(hook="OnChangePosition")]
     Vector3 realPosition;
@@ -29,7 +29,7 @@ public class Icicle : NetworkBehaviour {
 		else if (team == 1){
 			gameObject.layer = 11;
 		}
-		initialRot = transform.rotation;
+		//initialRot = transform.rotation;
 		realPosition = transform.position;
 		realRotation = transform.rotation;
 		active = true;
@@ -90,15 +90,15 @@ public class Icicle : NetworkBehaviour {
 	void OnCollisionEnter(Collision collision)
     {
     	if (active){
-	        ContactPoint contact = collision.contacts[0];
+	        //ContactPoint contact = collision.contacts[0];
 	        if (collision.gameObject.tag == "Unit"){
 		        if (collision.gameObject != null){
-			    	collision.gameObject.transform.GetComponent<Unit>().TakeDamage(icicleDamage);
+			    	collision.gameObject.transform.GetComponent<Unit>().TakeDamage(icicleDamage, 1);
 				}
 			}
 			else if (collision.gameObject.tag == "Building"){
 		        if (collision.gameObject != null){
-			    	collision.gameObject.transform.parent.GetComponent<Building>().TakeDamage(icicleDamage);
+			    	collision.gameObject.transform.parent.GetComponent<Building>().TakeDamage(icicleDamage, 1);
 				}
 			}
 			active = false;

@@ -24,6 +24,9 @@ public class GameManager : NetworkBehaviour {
 	public Text victoryResultText;
 	public Text defeatResultText;
 
+	// upgrades shop
+	public GameObject upgradesShop;
+
 	// local player!
 	public Spawn localPlayer;
 
@@ -44,7 +47,7 @@ public class GameManager : NetworkBehaviour {
 	// Add player to the game
 	public void AddPlayer(Spawn spawn){
 		players.Add(spawn);
-		if (players.Count == 2){
+		if (players.Count == 1){
 			// start the game, everyone joined
 			ServerStartGame();
 		}
@@ -160,7 +163,41 @@ public class GameManager : NetworkBehaviour {
 		}
 	}
 
+
+	// ----------------------------- Utility Functions ---------------//
+	// return function for local spawn
+	public Spawn GetLocalSpawn(){
+		return localPlayer;
+	}
+
+	// Players losing their base, show defeat or victory screen
+	public void MySpawnWasKilled(){
+		if (localPlayer.transform.GetComponent<Building>().GetHp()<=0){
+			defeatResultText.gameObject.SetActive(true);
+		}
+		else{
+			victoryResultText.gameObject.SetActive(true);
+		}
+		// enter game over state
+		ServerEnterGameState(2);
+	}
+
 	// ------------------------ Client UI Hooks -------------------------------
+	// open upgrades menu
+	public void BrowseUpgrades(){
+		if (gameState == 1){
+			// if active close shop else open shop
+			if (upgradesShop.activeSelf)
+				upgradesShop.SetActive(false);
+			else
+				upgradesShop.SetActive(true);
+		}
+	}
+	// close upgrades menu
+	public void CloseUpgrades(){
+		upgradesShop.SetActive(false);
+	}
+
 	// spawn a knight 
 	public void SpawnKnight(){
 		if (gameState == 1)
@@ -209,21 +246,20 @@ public class GameManager : NetworkBehaviour {
 			localPlayer.CmdIncreaseUnit(7);
 	}
 
-
-	// return function for local spawn
-	public Spawn GetLocalSpawn(){
-		return localPlayer;
+	// -------------- UPGRADES -------------- //
+	public void PurchaseMiningTools(){
+		localPlayer.CmdPurchaseUpgrade(0, 120);
 	}
 
-	// Players losing their base
-	public void MySpawnWasKilled(){
-		if (localPlayer.transform.GetComponent<Building>().GetHp()<=0){
-			defeatResultText.gameObject.SetActive(true);
-		}
-		else{
-			victoryResultText.gameObject.SetActive(true);
-		}
-		// enter game over state
-		ServerEnterGameState(2);
+	public void OpenNewMine(){
+		localPlayer.CmdPurchaseUpgrade(0, 120);
+	}
+
+	public void BuildGoldRefinery(){
+		localPlayer.CmdPurchaseUpgrade(0, 120);
+	}
+
+	public void HireAdditionalMiners(){
+		localPlayer.CmdPurchaseUpgrade(0, 120);
 	}
 }

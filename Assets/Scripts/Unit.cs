@@ -7,8 +7,8 @@ public class Unit : NetworkBehaviour {
 	private Spawn mySpawn;
 	private int team;
 	// for layermasks, dont change
-	private int layerTeamOne = 8;
-	private int layerTeamTwo = 9;
+	//private int layerTeamOne = 8;
+	//private int layerTeamTwo = 9;
 
 	// unit prefabs
 	public Arrow arrowPrefab;
@@ -82,87 +82,87 @@ public class Unit : NetworkBehaviour {
 
 		// Movement speed is controlled by setting run animation playback speed
 		if (UNITNAME == "Knight"){
-			MAXHP = 10;
+			MAXHP = 20;
 			RANGE = 2.5f;
-			DELAYBETWEENATTACKS = 2f;
-			DAMAGE = 2;
+			DELAYBETWEENATTACKS = 2.2f;
+			DAMAGE = 3;
 			ROTATIONSPEED = 0.5f;
 			PHYSICALRESIST = 1;
-			MAGICRESIST = 1;
-			// Movement speed 0.5
+			MAGICRESIST = 0;
+			// Movement speed 0.6
 		}
 		else if (UNITNAME == "KungFuFighter"){
-			MAXHP = 8;
+			MAXHP = 18;
 			RANGE = 3.3f;
-			DELAYBETWEENATTACKS = 1.2f;
-			DAMAGE = 1;
+			DELAYBETWEENATTACKS = 1.3f;
+			DAMAGE = 2;
 			ROTATIONSPEED = 0.5f;
 			PHYSICALRESIST = 0;
-			MAGICRESIST = 1;
+			MAGICRESIST = 0;
 			// Movement speed 0.8
 		}
 		else if (UNITNAME == "Archer"){
-			MAXHP = 5;
-			RANGE = 25f;
+			MAXHP = 16;
+			RANGE = 27f;
 			DELAYBETWEENATTACKS = 3f;
-			DAMAGE = 1;
+			DAMAGE = 0;
 			ROTATIONSPEED = 0.4f;
 			PHYSICALRESIST = 0;
 			MAGICRESIST = 0;
 			RANGED = true;
-			// Movement speed 0.4
-		}
-		else if (UNITNAME == "Hammer"){
-			MAXHP = 8;
-			RANGE = 4f;
-			DELAYBETWEENATTACKS = 3f;
-			DAMAGE = 2;
-			ROTATIONSPEED = 0.5f;
-			PHYSICALRESIST = 0;
-			MAGICRESIST = 1;
 			// Movement speed 0.6
 		}
 		else if (UNITNAME == "Swordsman"){
-			MAXHP = 8;
-			RANGE = 6f;
-			DELAYBETWEENATTACKS = 2.5f;
-			DAMAGE = 2;
+			MAXHP = 30;
+			RANGE = 5f;
+			DELAYBETWEENATTACKS = 2.3f;
+			DAMAGE = 6;
 			ROTATIONSPEED = 0.5f;
-			PHYSICALRESIST = 0;
+			PHYSICALRESIST = 2;
 			MAGICRESIST = 1;
-			// Movement speed 0.6
-		}
-		else if (UNITNAME == "Mage"){
-			MAXHP = 8;
-			RANGE = 20f;
-			DELAYBETWEENATTACKS = 3f;
-			DAMAGE = 0;
-			ROTATIONSPEED = 0.5f;
-			PHYSICALRESIST = 0;
-			MAGICRESIST = 1;
-			RANGED = true;
-			// Movement speed 0.6
+			// Movement speed 0.7
 		}
 		else if (UNITNAME == "DualSwords"){
-			MAXHP = 8;
-			RANGE = 2.3f;
-			DELAYBETWEENATTACKS = 2f;
-			DAMAGE = 2;
+			MAXHP = 35;
+			RANGE = 2.5f;
+			DELAYBETWEENATTACKS = 1.5f;
+			DAMAGE = 5;
 			ROTATIONSPEED = 0.5f;
-			PHYSICALRESIST = 0;
+			PHYSICALRESIST = 2;
 			MAGICRESIST = 1;
-			// Movement speed 0.8
+			// Movement speed 0.7
 		}
-		else if (UNITNAME == "Sorceress"){
-			MAXHP = 8;
-			RANGE = 15f;
+		else if (UNITNAME == "Mage"){
+			MAXHP = 20;
+			RANGE = 18f;
 			DELAYBETWEENATTACKS = 3f;
 			DAMAGE = 0;
 			ROTATIONSPEED = 0.5f;
 			PHYSICALRESIST = 0;
-			MAGICRESIST = 1;
+			MAGICRESIST = 2;
 			RANGED = true;
-			// Movement speed 0.8
+			// Movement speed 0.4
+		}
+		else if (UNITNAME == "Hammer"){
+			MAXHP = 50;
+			RANGE = 7f;
+			DELAYBETWEENATTACKS = 2.5f;
+			DAMAGE = 10;
+			ROTATIONSPEED = 0.5f;
+			PHYSICALRESIST = 3;
+			MAGICRESIST = 2;
+			// Movement speed 0.5
+		}
+		else if (UNITNAME == "Sorceress"){
+			MAXHP = 30;
+			RANGE = 22f;
+			DELAYBETWEENATTACKS = 2.7f;
+			DAMAGE = 0;
+			ROTATIONSPEED = 0.5f;
+			PHYSICALRESIST = 1;
+			MAGICRESIST = 3;
+			RANGED = true;
+			// Movement speed 0.6
 		}
 
 		// initialize stats
@@ -247,10 +247,10 @@ public class Unit : NetworkBehaviour {
 	            	Debug.Log(hitInfo.collider.gameObject.layer + ", " + gameObject.layer);
 
 	            	if (hitInfo.collider.gameObject.tag == "Unit"){
-	            		hitInfo.collider.transform.GetComponent<Unit>().TakeDamage(DAMAGE);
+	            		hitInfo.collider.transform.GetComponent<Unit>().TakeDamage(DAMAGE, 0);
 	            	}
 	            	else if (hitInfo.collider.gameObject.tag == "Building"){
-	            		hitInfo.collider.gameObject.transform.parent.GetComponent<Building>().TakeDamage(DAMAGE);
+	            		hitInfo.collider.gameObject.transform.parent.GetComponent<Building>().TakeDamage(DAMAGE, 0);
 	            	}
 		        }
 			}
@@ -263,10 +263,10 @@ public class Unit : NetworkBehaviour {
 		            if (hitUnits[unit].collider.gameObject.layer != gameObject.layer)
 		            {
 		            	if (hitUnits[unit].collider.gameObject.tag == "Unit"){
-		            		hitUnits[unit].collider.transform.GetComponent<Unit>().TakeDamage(DAMAGE);
+		            		hitUnits[unit].collider.transform.GetComponent<Unit>().TakeDamage(DAMAGE, 0);
 		            	}
 		            	else if (hitUnits[unit].collider.gameObject.tag == "Building"){
-		            		hitUnits[unit].collider.gameObject.transform.parent.GetComponent<Building>().TakeDamage(DAMAGE);
+		            		hitUnits[unit].collider.gameObject.transform.parent.GetComponent<Building>().TakeDamage(DAMAGE, 0);
 		            	}
 		            }
 		        }
@@ -523,12 +523,12 @@ public class Unit : NetworkBehaviour {
 	/*
 	* Take amount damage from a source. Only servers can take damage
 	*/
-	public void TakeDamage(int amount){
+	public void TakeDamage(int amount, int damageType){
 		if (!isServer){
 			return;
 		}
 
-		hp -= amount;
+		hp -= amount - (damageType == 0 ? PHYSICALRESIST : MAGICRESIST);
 		if (hp <= 0){
 			Destroy(this.gameObject);
 		}
