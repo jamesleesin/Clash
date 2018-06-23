@@ -1,14 +1,71 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.UI;
+using UnityEngine.Networking.Match;
 
 public class ClashNetworkManager : NetworkManager {
 	const int maxPlayers = 2;
 	Spawn[] playerSlots = new Spawn[2];
-
 	Vector3 spawnLocation1 = new Vector3(-11.3f, 5f, -18.7f);
 	Vector3 spawnLocation2 = new Vector3(-6.29f, 5f, 121.73f);
+	private NetworkManager networkManager;
 
+	[SerializeField]
+	private Text status;
+
+	// start the match maker
+	void Start(){
+		networkManager = NetworkManager.singleton;
+		if (networkManager.matchMaker == null){
+			networkManager.StartMatchMaker();
+		}
+	}
+
+	// called when user presses the create room button
+	public void CreateRoom(){
+		string roomName = GameObject.Find("RoomName").GetComponent<Text>().text;
+		if (roomName != "" && roomName != null){
+			Debug.Log("Created room");
+			networkManager.matchMaker.CreateMatch(roomName, 2, true, "", "", "", 0, 0, networkManager.OnMatchCreate);
+		}
+	}
+
+	// join room with the name in the input box
+	public void JoinRoom(){
+		networkManager.matchMaker.ListMatches(0, 20, "", true, 0, 0, OnMatchList);
+
+		Debug.Log("Joining room");
+		//this.matchMaker.JoinMatch(_match.networkId, "", "", "", 0, 0, OnMatchJoined);
+		//ClearRoomList();
+
+		status.text = "Joining...";
+	}
+
+	// called from join room, lists all matches
+	public void OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matchList){
+		base.OnMatchList(success, extendedInfo, matchList);
+		status.text = "";
+		if (matchList == null){
+			status.text = "Could not get matches.";
+			return;
+		}
+		string roomName = GameObject.Find("JoinRoomName").GetComponent<Text>().text;
+		// look for room with name entered
+		for (int m = 0; m < matchList.Count; m++){
+			if (matchList[m].name == roomName){
+				this.matchMaker.JoinMatch(matchList[m].networkId, "", "", "", 0, 0, OnMatchJoined);
+				return;
+			}
+			else{
+				Debug.Log(roomName + ", " + matchList[m].name);
+			}
+		}
+		status.text = "No matches found.";
+	}
+
+	// upon adding new player, check to see which player they are and spawn them correctly
 	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
 	{
 		// find empty player slot

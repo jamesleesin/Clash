@@ -47,7 +47,7 @@ public class GameManager : NetworkBehaviour {
 	// Add player to the game
 	public void AddPlayer(Spawn spawn){
 		players.Add(spawn);
-		if (players.Count == 1){
+		if (players.Count == 2){
 			// start the game, everyone joined
 			ServerStartGame();
 		}
@@ -216,14 +216,14 @@ public class GameManager : NetworkBehaviour {
 			localPlayer.CmdIncreaseUnit(2);
 	}
 
-	// spawn a hammer unit 
-	public void SpawnHammer(){
+	// spawn a swordsman
+	public void SpawnSwordsman(){
 		if (gameState == 1)
 			localPlayer.CmdIncreaseUnit(3);
 	}
 
-	// spawn a swordsman
-	public void SpawnSwordsman(){
+	// spawn dualswords
+	public void SpawnDualSwords(){
 		if (gameState == 1)
 			localPlayer.CmdIncreaseUnit(4);
 	}
@@ -234,11 +234,12 @@ public class GameManager : NetworkBehaviour {
 			localPlayer.CmdIncreaseUnit(5);
 	}
 
-	// spawn dualswords
-	public void SpawnDualSwords(){
+	// spawn a hammer unit 
+	public void SpawnHammer(){
 		if (gameState == 1)
 			localPlayer.CmdIncreaseUnit(6);
 	}
+
 
 	// spawn a sorceress
 	public void SpawnSorceress(){

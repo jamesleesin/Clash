@@ -496,7 +496,7 @@ public class Unit : NetworkBehaviour {
         else
         {
             transform.position = Vector3.Lerp(transform.position, realPosition, 0.1f);
-            transform.rotation = Quaternion.Lerp(transform.rotation, realRotation, 0.5f);
+            transform.rotation = Quaternion.Lerp(transform.rotation, realRotation, 0.3f);
         }
 
 
