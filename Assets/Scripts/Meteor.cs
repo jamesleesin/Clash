@@ -20,7 +20,8 @@ public class Meteor : NetworkBehaviour {
     Vector3 realPosition;
     [SyncVar(hook="OnChangeRotation")]
     Quaternion realRotation;
-    private float updateInterval;
+    private float updateIntervalTimer;
+    private float updateInterval = 0.1f;
 	
 	public void Initialize(int t){
 		team = t;
@@ -47,10 +48,10 @@ public class Meteor : NetworkBehaviour {
 
 		// smooth position and rotation
 		if (isServer){
-            updateInterval += Time.deltaTime;
-            if (updateInterval > 0.1f) // 10 times per second
+            updateIntervalTimer += Time.deltaTime;
+            if (updateIntervalTimer > updateInterval) // 10 times per second
             {
-                updateInterval = 0;
+                updateIntervalTimer = 0;
                 CmdSync(transform.position, transform.rotation);
             }
         }

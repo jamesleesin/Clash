@@ -9,7 +9,7 @@ public class Building : NetworkBehaviour {
 
 	[SyncVar(hook="OnChangeHealth")]
 	private int hp;
-	private int MAXHP = 1000;
+	private int MAXHP = 1500;
 	public Transform hpDisplay;
 	private int PHYSICALRESIST = 1;
 	private int MAGICRESIST = 1;

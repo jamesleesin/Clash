@@ -57,7 +57,8 @@ public class Unit : NetworkBehaviour {
     Vector3 realPosition;
     [SyncVar(hook="OnChangeRotation")]
     Quaternion realRotation;
-    private float updateInterval;
+    private float updateIntervalTimer;
+    private float updateInterval = 0.15f;
 
 	// Use this for initialization
 	void Start () {
@@ -65,7 +66,7 @@ public class Unit : NetworkBehaviour {
 		navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		gameObject.GetComponent<NetworkAnimator>().SetParameterAutoSend(0,true); 
 		gameObject.GetComponent<NetworkAnimator>().SetParameterAutoSend(1,true); 
-		gameObject.GetComponent<NetworkAnimator>().SetParameterAutoSend(2,true); 
+		//gameObject.GetComponent<NetworkAnimator>().SetParameterAutoSend(2,true); 
 		realPosition = transform.position;
 		realRotation = transform.rotation;
 	}
@@ -88,7 +89,7 @@ public class Unit : NetworkBehaviour {
 			DAMAGE = 3;
 			ROTATIONSPEED = 0.5f;
 			PHYSICALRESIST = 1;
-			MAGICRESIST = 0;
+			MAGICRESIST = 1;
 			// Movement speed 0.6
 		}
 		else if (UNITNAME == "KungFuFighter"){
@@ -102,9 +103,20 @@ public class Unit : NetworkBehaviour {
 			// Movement speed 0.8
 		}
 		else if (UNITNAME == "Archer"){
-			MAXHP = 16;
+			MAXHP = 14;
 			RANGE = 27f;
 			DELAYBETWEENATTACKS = 3f;
+			DAMAGE = 0;
+			ROTATIONSPEED = 0.4f;
+			PHYSICALRESIST = 0;
+			MAGICRESIST = 0;
+			RANGED = true;
+			// Movement speed 0.6
+		}
+		else if (UNITNAME == "Crossbow"){
+			MAXHP = 15;
+			RANGE = 22f;
+			DELAYBETWEENATTACKS = 4f;
 			DAMAGE = 0;
 			ROTATIONSPEED = 0.4f;
 			PHYSICALRESIST = 0;
@@ -206,6 +218,9 @@ public class Unit : NetworkBehaviour {
 		else if (UNITNAME == "Archer"){
 			StartCoroutine (AttackingPause(1.0f));
 		}
+		else if (UNITNAME == "Crossbow"){
+			StartCoroutine (AttackingPause(1.2f));
+		}
 		else if (UNITNAME == "Hammer"){
 			StartCoroutine (AttackingPause(1.7f));
 		}
@@ -244,7 +259,7 @@ public class Unit : NetworkBehaviour {
 				// origin, radius, direction, hitinfo, maxdistance
 		        if (Physics.SphereCast(transform.position, 0.7f, transform.forward, out hitInfo, RANGE))
 		        {
-	            	Debug.Log(hitInfo.collider.gameObject.layer + ", " + gameObject.layer);
+	            	//Debug.Log(hitInfo.collider.gameObject.layer + ", " + gameObject.layer);
 
 	            	if (hitInfo.collider.gameObject.tag == "Unit"){
 	            		hitInfo.collider.transform.GetComponent<Unit>().TakeDamage(DAMAGE, 0);
@@ -486,10 +501,10 @@ public class Unit : NetworkBehaviour {
 
 		// smooth position and rotation
 		if (isServer){
-            updateInterval += Time.deltaTime;
-            if (updateInterval > 0.067f) // 15 times per second
+            updateIntervalTimer += Time.deltaTime;
+            if (updateIntervalTimer > updateInterval)
             {
-                updateInterval = 0;
+                updateIntervalTimer = 0;
                 CmdSync(transform.position, transform.rotation);
             }
         }
@@ -580,7 +595,7 @@ public class Unit : NetworkBehaviour {
 
 
 
-	//////////// ARCHER FUNCTIONS ///////////////
+	//////////// ARCHER/CROSSBOW FUNCTIONS ///////////////
 
 	/*
 	* Animation event called for archers when they prep their bow
@@ -592,7 +607,6 @@ public class Unit : NetworkBehaviour {
 			Quaternion rot = transform.rotation * Quaternion.Euler(0, 90, 0);
 			newArrow = Instantiate(arrowPrefab, itemSpawnPos, rot);
 			newArrow.Initialize(team);
-			Debug.Log("create arrow on team " + team);
 			newArrow.GetComponent<Rigidbody>().useGravity = false;
 			NetworkServer.Spawn(newArrow.gameObject);
 		}

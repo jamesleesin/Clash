@@ -1,0 +1,33 @@
+******** PATCH NOTES *******
+
+1.1
+////// Gameplay //////
+-Increased default gold gain to 2/s
+-Increased time between waves from 15s -> 20s
+-Raise Knight price from 60g -> 65g
+-Raise Knight Magic Resist from 0 -> 1
+-Raise Archer price from 90g -> 95g
+-Lower Archer HP from 16 -> 14
+-Lower Mage price from 200g -> 150g
+-Lower Dualwielder price from 200g -> 165g
+-Lower Hammerman price from 270 -> 250g
+-Lower Sorceress price from 300 -> 240g
+-Raise Building HP from 1000 -> 1500 
+
+-NEW UNIT: Crossbow
+-HP: 15
+-RANGE: 22
+-ATTACKSPEED: 0.25
+-DAMAGE: 3
+-PHYS RESIST: 0
+-MAGIC RESIST: 0
+
+
+////// HUD //////
+-added dialog for game loading
+-block "create room" button after initial press to prevent multi clicking
+-added Clash game icon to landing screen
+-added unit card gallery to landing screen
+-added tip to landing screen
+-change all text in the game to OptimusPrinceps and OptimusPrincepsSemiBold
+-Added panning background in lobby

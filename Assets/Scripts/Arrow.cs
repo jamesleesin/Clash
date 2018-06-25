@@ -21,8 +21,7 @@ public class Arrow : NetworkBehaviour {
     Vector3 realPosition;
     [SyncVar(hook="OnChangeRotation")]
     Quaternion realRotation;
-    private float updateIntervalPos;
-    private float updateIntervalRot;
+    private float updateInterval;
 
 	public void Initialize(int t){
 		team = t;
@@ -49,16 +48,11 @@ public class Arrow : NetworkBehaviour {
 
 		// smooth position and rotation
 		if (isServer){
-            updateIntervalPos += Time.deltaTime;
-            updateIntervalRot += Time.deltaTime;
-            if (updateIntervalPos > 0.1f) // 10 times per second
+            updateInterval += Time.deltaTime;
+            if (updateInterval > 0.15f) // 10 times per second
             {
-                updateIntervalPos = 0;
-                CmdSyncPos(transform.position);
-            }
-            if (updateIntervalRot > 0.03f){
-            	updateIntervalRot = 0;
-                CmdSyncRot(transform.rotation);
+                updateInterval = 0;
+                CmdSync(transform.position, transform.rotation);
             }
         }
         else
@@ -70,14 +64,9 @@ public class Arrow : NetworkBehaviour {
 	}
 
 	[Command]
-    void CmdSyncPos(Vector3 position)
+    void CmdSync(Vector3 position, Quaternion rotation)
     {
         realPosition = position;
-    }
-
-    [Command]
-    void CmdSyncRot(Quaternion rotation)
-    {
         realRotation = rotation;
     }
 

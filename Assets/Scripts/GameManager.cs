@@ -216,35 +216,41 @@ public class GameManager : NetworkBehaviour {
 			localPlayer.CmdIncreaseUnit(2);
 	}
 
+	// spawn a crossbow
+	public void SpawnCrossbow(){
+		if (gameState == 1)
+			localPlayer.CmdIncreaseUnit(3);
+	}
+
 	// spawn a swordsman
 	public void SpawnSwordsman(){
 		if (gameState == 1)
-			localPlayer.CmdIncreaseUnit(3);
+			localPlayer.CmdIncreaseUnit(4);
 	}
 
 	// spawn dualswords
 	public void SpawnDualSwords(){
 		if (gameState == 1)
-			localPlayer.CmdIncreaseUnit(4);
+			localPlayer.CmdIncreaseUnit(5);
 	}
 
 	// spawn a mage
 	public void SpawnMage(){
 		if (gameState == 1)
-			localPlayer.CmdIncreaseUnit(5);
+			localPlayer.CmdIncreaseUnit(6);
 	}
 
 	// spawn a hammer unit 
 	public void SpawnHammer(){
 		if (gameState == 1)
-			localPlayer.CmdIncreaseUnit(6);
+			localPlayer.CmdIncreaseUnit(7);
 	}
 
 
 	// spawn a sorceress
 	public void SpawnSorceress(){
 		if (gameState == 1)
-			localPlayer.CmdIncreaseUnit(7);
+			localPlayer.CmdIncreaseUnit(8);
 	}
 
 	// -------------- UPGRADES -------------- //

@@ -7,10 +7,11 @@ public class LocalHUD : MonoBehaviour {
 	public Text numKnightSpawnPerWave;
 	public Text numKungFuFighterSpawnPerWave;
 	public Text numArcherSpawnPerWave;
-	public Text numHammerSpawnPerWave;
+	public Text numCrossbowSpawnPerWave;
 	public Text numSwordsmanSpawnPerWave;
-	public Text numMageSpawnPerWave;
 	public Text numDualSwordsSpawnPerWave;
+	public Text numMageSpawnPerWave;
+	public Text numHammerSpawnPerWave;
 	public Text numSorceressSpawnPerWave;
 	private Spawn mySpawn;
 	
@@ -27,11 +28,12 @@ public class LocalHUD : MonoBehaviour {
 			numKnightSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(0).ToString();
 			numKungFuFighterSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(1).ToString();
 			numArcherSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(2).ToString();
-			numHammerSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(3).ToString();
+			numCrossbowSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(3).ToString();
 			numSwordsmanSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(4).ToString();
-			numMageSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(5).ToString();
-			numDualSwordsSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(6).ToString();
-			numSorceressSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(7).ToString();
+			numDualSwordsSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(5).ToString();
+			numMageSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(6).ToString();
+			numHammerSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(7).ToString();
+			numSorceressSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(8).ToString();
 		}
 	}
 }

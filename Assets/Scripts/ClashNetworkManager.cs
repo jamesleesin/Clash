@@ -15,8 +15,17 @@ public class ClashNetworkManager : NetworkManager {
 	[SerializeField]
 	private Text status;
 
+	// boolean to prevent multiple clicking of buttons
+	private bool creatingRoom = false;
+
 	// start the match maker
 	void Start(){
+		ConnectionConfig myConfig = new ConnectionConfig();
+        myConfig.AddChannel(QosType.Unreliable);
+        myConfig.AddChannel(QosType.UnreliableFragmented);
+        myConfig.NetworkDropThreshold = 50;         //50%
+        myConfig.OverflowDropThreshold = 10;         //10%
+
 		networkManager = NetworkManager.singleton;
 		if (networkManager.matchMaker == null){
 			networkManager.StartMatchMaker();
@@ -26,9 +35,15 @@ public class ClashNetworkManager : NetworkManager {
 	// called when user presses the create room button
 	public void CreateRoom(){
 		string roomName = GameObject.Find("RoomName").GetComponent<Text>().text;
-		if (roomName != "" && roomName != null){
+		if (roomName == "" || roomName == null){
+			status.text = "Invalid Room Name";
+			return;
+		}
+		if (roomName != "" && roomName != null && !creatingRoom){
+			creatingRoom = true;
 			Debug.Log("Created room");
 			networkManager.matchMaker.CreateMatch(roomName, 2, true, "", "", "", 0, 0, networkManager.OnMatchCreate);
+			status.text = "Creating room...";
 		}
 	}
 
@@ -118,6 +133,7 @@ public class ClashNetworkManager : NetworkManager {
 			playerSlots[player.playerId] = null;
 			GameManager.singleton.RemovePlayer(player);
 		}
+		creatingRoom = false;
 
 		base.OnServerDisconnect(conn);
 	}

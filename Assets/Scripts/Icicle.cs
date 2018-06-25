@@ -47,7 +47,7 @@ public class Icicle : NetworkBehaviour {
 		// smooth position and rotation
 		if (isServer){
             updateInterval += Time.deltaTime;
-            if (updateInterval > 0.1f) // 10 times per second
+            if (updateInterval > 0.15f) // 10 times per second
             {
                 updateInterval = 0;
                 CmdSync(transform.position, transform.rotation);

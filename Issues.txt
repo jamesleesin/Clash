@@ -1,0 +1,2 @@
+Client will disconnect when there are too many units on the screen.
+Caused by Unity disconnecting the player when there are too many messages in the queue. Need to lower the number of network messages sent. 

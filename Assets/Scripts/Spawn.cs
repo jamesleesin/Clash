@@ -16,7 +16,7 @@ public class Spawn : NetworkBehaviour {
 	[SyncVar(hook="OnTime")]
 	public int timeUntilNextWave; 
 
-	private int DELAYBETWEENWAVES = 15;
+	private int DELAYBETWEENWAVES = 20;
 
 	// upgrade bool array
 	private bool[] upgradesAcquired = {false, false, false, false};
@@ -24,12 +24,13 @@ public class Spawn : NetworkBehaviour {
 	// List keeping track of how many of each unit to spawn. Order:
 	// Knight, KungFuFighter, ..
 	// Team one and two lists are inverted to preserve order of spawns
-	private int[] numOfEachUnitToSpawn = {0, 0, 0, 0, 0, 0, 0, 0};
-	private int[] unitPrices = {60, 50, 90, 150, 200, 200, 270, 300};
+	private int[] numOfEachUnitToSpawn = {0, 0, 40, 0, 0, 0, 0, 0, 0};
+	private int[] unitPrices = {65, 50, 95, 100, 150, 165, 150, 250, 240};
 	public Unit[] unitPrefabs;
-	private string[] unitNames = {"Knight", "KungFuFighter", "Archer", "Swordsman", "DualSwords", "Mage", "Hammer", "Sorceress"};
+	private string[] unitNames = {"Knight", "KungFuFighter", "Archer", "Crossbow", "Swordsman", "DualSwords", "Mage", "Hammer", "Sorceress"};
 
-	private int baseGoldGainPerTick = 1;
+	// gain 2g/s base
+	private int baseGoldGainPerTick = 2;
 
 	public GameObject[] componentsToDisable;
 
