@@ -12,7 +12,7 @@ public class LocalHUD : MonoBehaviour {
 	public Text numDualSwordsSpawnPerWave;
 	public Text numMageSpawnPerWave;
 	public Text numHammerSpawnPerWave;
-	public Text numSorceressSpawnPerWave;
+	public Text numNinjaSpawnPerWave;
 	private Spawn mySpawn;
 	
 	public void SetSpawn(Spawn s){
@@ -33,7 +33,7 @@ public class LocalHUD : MonoBehaviour {
 			numDualSwordsSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(5).ToString();
 			numMageSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(6).ToString();
 			numHammerSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(7).ToString();
-			numSorceressSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(8).ToString();
+			numNinjaSpawnPerWave.text = mySpawn.GetNumSpawnPerWave(8).ToString();
 		}
 	}
 }

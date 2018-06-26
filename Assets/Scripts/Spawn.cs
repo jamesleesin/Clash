@@ -24,10 +24,10 @@ public class Spawn : NetworkBehaviour {
 	// List keeping track of how many of each unit to spawn. Order:
 	// Knight, KungFuFighter, ..
 	// Team one and two lists are inverted to preserve order of spawns
-	private int[] numOfEachUnitToSpawn = {0, 0, 40, 0, 0, 0, 0, 0, 0};
+	private int[] numOfEachUnitToSpawn = {0, 0, 40, 0, 0, 0, 0, 1, 0};
 	private int[] unitPrices = {65, 50, 95, 100, 150, 165, 150, 250, 240};
 	public Unit[] unitPrefabs;
-	private string[] unitNames = {"Knight", "KungFuFighter", "Archer", "Crossbow", "Swordsman", "DualSwords", "Mage", "Hammer", "Sorceress"};
+	private string[] unitNames = {"Knight", "KungFuFighter", "Archer", "Crossbow", "Swordsman", "DualSwords", "Mage", "Hammer", "Ninja"};
 
 	// gain 2g/s base
 	private int baseGoldGainPerTick = 2;
@@ -119,6 +119,9 @@ public class Spawn : NetworkBehaviour {
 
 	[Server]
 	public void SpawnUnits(){
+		// by adding to numUnitsActive only once at the end of all spawns, 
+		// we can remove many OnUnit network calls (from n calls to 1 call)
+		int totalSpawned = 0;
 		// spawn units
 		for (int i = 0; i < numOfEachUnitToSpawn.Length; i++){
 			for (int c = 0; c < numOfEachUnitToSpawn[i]; c++){
@@ -126,9 +129,10 @@ public class Spawn : NetworkBehaviour {
 	        	newUnit.GetComponent<Unit>().UNITNAME = unitNames[i];
 	        	newUnit.GetComponent<Unit>().Initialize(playerId, this);
 	        	NetworkServer.Spawn(newUnit.gameObject);
-	        	numUnitsActive++;
+	        	totalSpawned++;
         	}
 		}
+		numUnitsActive += totalSpawned;
 		//RpcSpawnUnits();
 	}
 

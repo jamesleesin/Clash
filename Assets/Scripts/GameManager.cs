@@ -246,12 +246,18 @@ public class GameManager : NetworkBehaviour {
 			localPlayer.CmdIncreaseUnit(7);
 	}
 
+	// spawn a ninja
+	public void SpawnNinja(){
+		if (gameState == 1)
+			localPlayer.CmdIncreaseUnit(8);
+	}
 
+	/*
 	// spawn a sorceress
 	public void SpawnSorceress(){
 		if (gameState == 1)
 			localPlayer.CmdIncreaseUnit(8);
-	}
+	}*/
 
 	// -------------- UPGRADES -------------- //
 	public void PurchaseMiningTools(){

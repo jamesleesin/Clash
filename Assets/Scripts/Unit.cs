@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+[NetworkSettings(sendInterval = 0.15f)]
 public class Unit : NetworkBehaviour {
 	private Spawn mySpawn;
 	private int team;
@@ -14,7 +15,7 @@ public class Unit : NetworkBehaviour {
 	public Arrow arrowPrefab;
 	private Arrow newArrow;
 	public Meteor meteorPrefab;
-	public Icicle iciclePrefab;
+	public Shuriken shurikenPrefab;
 
 	// set values that dont change once set
 	[SyncVar(hook="OnChangeMaxHealth")]
@@ -34,7 +35,7 @@ public class Unit : NetworkBehaviour {
 	private float attackCooldownTimer;
 	public Transform hpDisplay;
 
-	[SyncVar]
+	//[SyncVar]
 	private bool attacking = false;
 	private bool targetingBuilding = false;
 
@@ -57,18 +58,21 @@ public class Unit : NetworkBehaviour {
     Vector3 realPosition;
     [SyncVar(hook="OnChangeRotation")]
     Quaternion realRotation;
+    Vector3 lastSentPosition;
+    Quaternion lastSentRotation;
     private float updateIntervalTimer;
-    private float updateInterval = 0.15f;
+    private float updateInterval = 0.08f;
 
 	// Use this for initialization
 	void Start () {
 		animator = GetComponent<Animator>();
 		navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-		gameObject.GetComponent<NetworkAnimator>().SetParameterAutoSend(0,true); 
-		gameObject.GetComponent<NetworkAnimator>().SetParameterAutoSend(1,true); 
-		//gameObject.GetComponent<NetworkAnimator>().SetParameterAutoSend(2,true); 
+		//networkAnimator.SetParameterAutoSend(0,true); 
+		//networkAnimator.SetParameterAutoSend(1,true); 
 		realPosition = transform.position;
 		realRotation = transform.rotation;
+		lastSentPosition = transform.position;
+		lastSentRotation = transform.rotation;
 	}
 
 	public void Initialize(int t, Spawn s){
@@ -146,7 +150,7 @@ public class Unit : NetworkBehaviour {
 		}
 		else if (UNITNAME == "Mage"){
 			MAXHP = 20;
-			RANGE = 18f;
+			RANGE = 22f;
 			DELAYBETWEENATTACKS = 3f;
 			DAMAGE = 0;
 			ROTATIONSPEED = 0.5f;
@@ -156,15 +160,28 @@ public class Unit : NetworkBehaviour {
 			// Movement speed 0.4
 		}
 		else if (UNITNAME == "Hammer"){
-			MAXHP = 50;
+			MAXHP = 70;
 			RANGE = 7f;
 			DELAYBETWEENATTACKS = 2.5f;
 			DAMAGE = 10;
 			ROTATIONSPEED = 0.5f;
-			PHYSICALRESIST = 3;
+			PHYSICALRESIST = 2;
 			MAGICRESIST = 2;
 			// Movement speed 0.5
 		}
+		else if (UNITNAME == "Ninja"){
+			MAXHP = 30;
+			RANGE = 15f;
+			DELAYBETWEENATTACKS = 2.7f;
+			DAMAGE = 0;
+			ROTATIONSPEED = 0.5f;
+			PHYSICALRESIST = 1;
+			MAGICRESIST = 3;
+			RANGED = true;
+			// Movement speed 0.55
+		}
+		/* 
+		// Sorceress not used because motion is messed up
 		else if (UNITNAME == "Sorceress"){
 			MAXHP = 30;
 			RANGE = 22f;
@@ -175,7 +192,7 @@ public class Unit : NetworkBehaviour {
 			MAGICRESIST = 3;
 			RANGED = true;
 			// Movement speed 0.6
-		}
+		}*/
 
 		// initialize stats
 		hp = MAXHP;
@@ -191,13 +208,7 @@ public class Unit : NetworkBehaviour {
 	public IEnumerator AttackingPause(float pauseTime)
 	{
 		animator.ResetTrigger("Attack1Trigger");
-		//if (!isServer){
-		gameObject.GetComponent<NetworkAnimator>().SetTrigger("Attack1Trigger");
-		//}
-		//else{
-			//animator.SetTrigger("Attack1Trigger");
-		//}
-
+		networkAnimator.SetTrigger("Attack1Trigger");
 		yield return new WaitForSeconds(pauseTime);
 		attacking = false;
 	}
@@ -233,9 +244,13 @@ public class Unit : NetworkBehaviour {
 		else if (UNITNAME == "DualSwords"){
 			StartCoroutine (AttackingPause(1.2f));
 		}
-		else if (UNITNAME == "Sorceress"){
+		else if (UNITNAME == "Ninja"){
 			StartCoroutine (AttackingPause(1.3f));
 		}
+		/*
+		else if (UNITNAME == "Sorceress"){
+			StartCoroutine (AttackingPause(1.3f));
+		}*/
 	}
 
 	/*
@@ -415,7 +430,7 @@ public class Unit : NetworkBehaviour {
 			// "Sticky" positioning, only set a new target position if the delta position is > 3
 			// if the new distance is too short then don't bother moving (prevents jitters)
 			if ((deltaDestination - targetDestination).sqrMagnitude > 0.08f){
-				Debug.DrawLine(transform.position, targetDestination, Color.white);
+				//Debug.DrawLine(transform.position, targetDestination, Color.white);
 				navAgent.SetDestination(targetDestination);
 
 				// if the unit has some time before their next attack then they can "kite" for 0.3s
@@ -499,13 +514,23 @@ public class Unit : NetworkBehaviour {
 			}
 		}
 
-		// smooth position and rotation
+		// smooth position and rotation.
+		// If server, sync position to all clients if change in position is > 1f
+		// Sync rotation to all clients if change in rotation angle is > 8 degrees
+		// If client, then Lerp between current position/rotation and server updated position/rotation
 		if (isServer){
             updateIntervalTimer += Time.deltaTime;
             if (updateIntervalTimer > updateInterval)
             {
                 updateIntervalTimer = 0;
-                CmdSync(transform.position, transform.rotation);
+                if (Vector3.Distance(lastSentPosition, transform.position) > 1f){
+					CmdSyncPos(transform.position);
+					lastSentPosition = transform.position;
+				}
+				if (Quaternion.Angle(transform.rotation, lastSentRotation) > 8f){
+					CmdSyncRot(transform.rotation);
+					lastSentRotation = transform.rotation;
+				}
             }
         }
         else
@@ -513,7 +538,6 @@ public class Unit : NetworkBehaviour {
             transform.position = Vector3.Lerp(transform.position, realPosition, 0.1f);
             transform.rotation = Quaternion.Lerp(transform.rotation, realRotation, 0.3f);
         }
-
 
 		// attack cooldown
 		if (attackCooldownTimer > 0f){
@@ -528,12 +552,16 @@ public class Unit : NetworkBehaviour {
 	}
 
     [Command]
-    void CmdSync(Vector3 position, Quaternion rotation)
+    void CmdSyncPos(Vector3 position)
     {
         realPosition = position;
-        realRotation = rotation;
     }
 
+    [Command]
+    void CmdSyncRot(Quaternion rotation)
+    {
+        realRotation = rotation;
+    }
 
 	/*
 	* Take amount damage from a source. Only servers can take damage
@@ -600,7 +628,7 @@ public class Unit : NetworkBehaviour {
 	/*
 	* Animation event called for archers when they prep their bow
 	*/
-	[Server]
+	[ServerCallback]
 	public void CreateArrow(){
 		if (isServer){
 			Vector3 itemSpawnPos = new Vector3(transform.position.x, transform.position.y + 1.9f, transform.position.z);
@@ -615,7 +643,7 @@ public class Unit : NetworkBehaviour {
 	/*
 	* Animation event called for archers when they release the arrow
 	*/
-	[Server]
+	[ServerCallback]
 	public void FireArrow(){
 		if (isServer){
 			if (newArrow != null){
@@ -635,7 +663,7 @@ public class Unit : NetworkBehaviour {
 	/*
 	* Animation event called for mages to spawn a meteor
 	*/
-	[Server]
+	[ServerCallback]
 	void CreateMeteor(){
 		Vector3 itemSpawnPos = new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z);
 		Vector3 dir = targetUnit.transform.position - itemSpawnPos + Vector3.up * 1.5f;
@@ -648,23 +676,23 @@ public class Unit : NetworkBehaviour {
 
 
 
-	/////////////// SORCERESS FUNCTIONS ////////////////////
+	/////////////// NINJA FUNCTIONS ////////////////////
 	/*
-	* Animation event called for sorceress to cast ice blast
+	* Animation event called for ninja to cast shuriken toss
 	*/
-	[Server]
-	void IceBlast(){
+	[ServerCallback]
+	void ThrowShuriken(){
 		Vector3 itemSpawnPos = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
-		// add a little variance to icicles
+		// add a little variance to shurikens
 		float varianceRange = Mathf.Sqrt(Vector3.Distance(targetUnit.transform.position, transform.position));
-		Vector3 variance = Vector3.forward * Random.Range(-varianceRange, varianceRange) + Vector3.left * Random.Range(-varianceRange, varianceRange); 
-		Vector3 dir = targetUnit.transform.position - itemSpawnPos + Vector3.up * 1.5f + variance;
-		Quaternion rot = Quaternion.LookRotation(dir);
-		Icicle newIcicle = Instantiate(iciclePrefab, itemSpawnPos, rot);
-		newIcicle.Initialize(team);
-		NetworkServer.Spawn(newIcicle.gameObject);
-		newIcicle.transform.Rotate(90, 0, 0);
-		newIcicle.GetComponent<Rigidbody>().AddForce(Vector3.Normalize(dir) * 40f, ForceMode.Impulse);
+		Vector3 variance = Vector3.forward * 1.5f + Vector3.left * Random.Range(-varianceRange, varianceRange); 
+		Vector3 dir = targetUnit.transform.position - itemSpawnPos + Vector3.up * 2f + variance;
+		//Quaternion rot = Quaternion.LookRotation(dir);
+		Shuriken newShuriken = Instantiate(shurikenPrefab, itemSpawnPos, Quaternion.identity);
+		newShuriken.Initialize(team);
+		NetworkServer.Spawn(newShuriken.gameObject);
+		//newShuriken.transform.Rotate(90, 0, 0);
+		newShuriken.GetComponent<Rigidbody>().AddForce(Vector3.Normalize(dir) * 40f, ForceMode.Impulse);
 	}
 
 	//////////// TRIGGERS FOR MOVEMENT ///////////////

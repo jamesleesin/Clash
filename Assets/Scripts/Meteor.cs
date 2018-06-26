@@ -111,7 +111,7 @@ public class Meteor : NetworkBehaviour {
     }
 
     // Create flame on ground
-    [Server]
+    [ServerCallback]
     public void CreateFlame(){
     	Vector3 flameSpawnPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
 		Quaternion rot = Quaternion.Euler(0, 0, 0);

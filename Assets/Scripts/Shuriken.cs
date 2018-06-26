@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class Icicle : NetworkBehaviour {
+public class Shuriken : NetworkBehaviour {
 	private int team;
 	// for layermasks, dont change
 	//private int layerTeamOne = 8;
 	//private int layerTeamTwo = 9;
 
-	private const int icicleDamage = 7;
+	private const int shurikenDamage = 7;
 	private bool active = false;
 	private float destroyTimer = 10f;
 
@@ -93,12 +93,12 @@ public class Icicle : NetworkBehaviour {
 	        //ContactPoint contact = collision.contacts[0];
 	        if (collision.gameObject.tag == "Unit"){
 		        if (collision.gameObject != null){
-			    	collision.gameObject.transform.GetComponent<Unit>().TakeDamage(icicleDamage, 1);
+			    	collision.gameObject.transform.GetComponent<Unit>().TakeDamage(shurikenDamage, 1);
 				}
 			}
 			else if (collision.gameObject.tag == "Building"){
 		        if (collision.gameObject != null){
-			    	collision.gameObject.transform.parent.GetComponent<Building>().TakeDamage(icicleDamage, 1);
+			    	collision.gameObject.transform.parent.GetComponent<Building>().TakeDamage(shurikenDamage, 1);
 				}
 			}
 			active = false;

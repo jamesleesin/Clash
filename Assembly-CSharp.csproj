@@ -64,7 +64,6 @@
      <Compile Include="Assets\Scripts\ClashNetworkManager.cs" />
      <Compile Include="Assets\Scripts\Flame.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
-     <Compile Include="Assets\Scripts\Icicle.cs" />
      <Compile Include="Assets\Scripts\Lobby.cs" />
      <Compile Include="Assets\Scripts\Lobby\CameraPanning.cs" />
      <Compile Include="Assets\Scripts\Lobby\Gallery.cs" />
@@ -74,6 +73,7 @@
      <Compile Include="Assets\Scripts\LocalHUD.cs" />
      <Compile Include="Assets\Scripts\MainMenu.cs" />
      <Compile Include="Assets\Scripts\Meteor.cs" />
+     <Compile Include="Assets\Scripts\Shuriken.cs" />
      <Compile Include="Assets\Scripts\Spawn.cs" />
      <Compile Include="Assets\Scripts\SpawnLocation.cs" />
      <Compile Include="Assets\Scripts\Unit.cs" />

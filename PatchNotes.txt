@@ -22,7 +22,6 @@
 -PHYS RESIST: 0
 -MAGIC RESIST: 0
 
-
 ////// HUD //////
 -added dialog for game loading
 -block "create room" button after initial press to prevent multi clicking
@@ -31,3 +30,24 @@
 -added tip to landing screen
 -change all text in the game to OptimusPrinceps and OptimusPrincepsSemiBold
 -Added panning background in lobby
+
+
+1.2
+-Instead of updating position/rotation constantly 
+-Lower network send rate to 0.15 from 0.1
+-Issues with Sorceress movement, gave her a new idle/movement/attack animation
+
+////// Gameplay //////
+-Lower Hammerman Phys. Resist from 3 -> 2
+-Raise Hammerman HP from 50 -> 75
+-Raise Mage range from 18 -> 22
+
+-NEW UNIT: Ninja (Replaces sorceress)
+-HP: 30
+-RANGE: 15
+-ATTACKSPEED: 0.37
+-DAMAGE: 7
+-PHYS RESIST: 1
+-MAGIC RESIST: 3
+
+With base spawn of 40 archers, client disconnects at 115s, with around ~130 units on the screen.

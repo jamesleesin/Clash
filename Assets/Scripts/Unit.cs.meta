@@ -1,10 +1,16 @@
 fileFormatVersion: 2
 guid: eb21aaead8070f3419b5419b1313db37
-timeCreated: 1527989035
+timeCreated: 1529978726
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - arrowPrefab: {instanceID: 0}
+  - meteorPrefab: {instanceID: 0}
+  - shurikenPrefab: {fileID: 114304217647291150, guid: c676dd17eea3080419a66e7910cc4275,
+      type: 2}
+  - hpDisplay: {instanceID: 0}
+  - networkAnimator: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
