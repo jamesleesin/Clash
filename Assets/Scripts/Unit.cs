@@ -1,9 +1,9 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-[NetworkSettings(sendInterval = 0.15f)]
+[NetworkSettings(sendInterval = 0.12f)]
 public class Unit : NetworkBehaviour {
 	private Spawn mySpawn;
 	private int team;
@@ -178,7 +178,7 @@ public class Unit : NetworkBehaviour {
 			PHYSICALRESIST = 1;
 			MAGICRESIST = 3;
 			RANGED = true;
-			// Movement speed 0.55
+			// Movement speed 0.6
 		}
 		/* 
 		// Sorceress not used because motion is messed up
@@ -523,11 +523,11 @@ public class Unit : NetworkBehaviour {
             if (updateIntervalTimer > updateInterval)
             {
                 updateIntervalTimer = 0;
-                if (Vector3.Distance(lastSentPosition, transform.position) > 1f){
+                if (Vector3.Distance(lastSentPosition, transform.position) > 1.2f){
 					CmdSyncPos(transform.position);
 					lastSentPosition = transform.position;
 				}
-				if (Quaternion.Angle(transform.rotation, lastSentRotation) > 8f){
+				if (Quaternion.Angle(transform.rotation, lastSentRotation) > 12f){
 					CmdSyncRot(transform.rotation);
 					lastSentRotation = transform.rotation;
 				}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+[NetworkSettings(sendInterval = 0.12f)]
 public class Arrow : NetworkBehaviour {
 	private int team;
 	// for layermasks, dont change

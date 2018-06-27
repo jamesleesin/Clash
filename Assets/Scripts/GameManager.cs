@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
+using UnityEngine.EventSystems;
 
 public class GameManager : NetworkBehaviour {
 	public static GameManager singleton;
@@ -14,8 +15,11 @@ public class GameManager : NetworkBehaviour {
 	[SyncVar]
 	public int timeUntilNextWave;
 
+	// these variables are updated from Spawn calling the GameManager singleton
 	public Text goldAmountTeamOne;
 	public Text goldAmountTeamTwo;
+	public Text unitLimitTeamOne;
+	public Text unitLimitTeamTwo;
 	public Text numUnitsTeamOne;
 	public Text numUnitsTeamTwo;
 	public Text waveTimer;
@@ -261,18 +265,58 @@ public class GameManager : NetworkBehaviour {
 
 	// -------------- UPGRADES -------------- //
 	public void PurchaseMiningTools(){
-		localPlayer.CmdPurchaseUpgrade(0, 120);
+		if (!localPlayer.UpgradeStatus(0)){
+			localPlayer.CmdPurchaseUpgrade(0, 120);
+			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+		}
 	}
 
 	public void OpenNewMine(){
-		localPlayer.CmdPurchaseUpgrade(0, 120);
+		if (!localPlayer.UpgradeStatus(1)){
+			localPlayer.CmdPurchaseUpgrade(1, 120);
+			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+		}
 	}
 
 	public void BuildGoldRefinery(){
-		localPlayer.CmdPurchaseUpgrade(0, 120);
+		if (!localPlayer.UpgradeStatus(2)){
+			localPlayer.CmdPurchaseUpgrade(2, 120);
+			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+		}
 	}
 
 	public void HireAdditionalMiners(){
-		localPlayer.CmdPurchaseUpgrade(0, 120);
+		if (!localPlayer.UpgradeStatus(3)){
+			localPlayer.CmdPurchaseUpgrade(3, 120);
+			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+		}
+	}
+
+	public void IncreaseFoodSupply1(){
+		if (!localPlayer.UpgradeStatus(4)){
+			localPlayer.CmdPurchaseUpgrade(4, 50);
+			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+		}
+	}
+
+	public void IncreaseFoodSupply2(){
+		if (!localPlayer.UpgradeStatus(5)){
+			localPlayer.CmdPurchaseUpgrade(5, 50);
+			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+		}
+	}
+
+	public void IncreaseFoodSupply3(){
+		if (!localPlayer.UpgradeStatus(6)){
+			localPlayer.CmdPurchaseUpgrade(6, 50);
+			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+		}
+	}
+
+	public void IncreaseFoodSupply4(){
+		if (!localPlayer.UpgradeStatus(7)){
+			localPlayer.CmdPurchaseUpgrade(7, 50);
+			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+		}
 	}
 }

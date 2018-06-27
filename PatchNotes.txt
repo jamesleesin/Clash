@@ -34,8 +34,14 @@
 
 1.2
 -Instead of updating position/rotation constantly 
--Lower network send rate to 0.15 from 0.1
+-Lower network send rate to 0.12 from 0.1
 -Issues with Sorceress movement, gave her a new idle/movement/attack animation
+-MOST LIKELY fixed client crashing issue by restricting the number of units spawned (therefore reducing the number of units active at once)
+
+////// HUD //////
+-Added Supply limit for each team, as well as upgrades to increase supply limit. Base 5, up to 4 upgrades of 5 each means a total of 25 supply per team.
+-Disabled corresponding buttons after buying an upgrade
+-Fixed a bug not letting players buy any upgrades except the first one
 
 ////// Gameplay //////
 -Lower Hammerman Phys. Resist from 3 -> 2
@@ -49,5 +55,3 @@
 -DAMAGE: 7
 -PHYS RESIST: 1
 -MAGIC RESIST: 3
-
-With base spawn of 40 archers, client disconnects at 115s, with around ~130 units on the screen.

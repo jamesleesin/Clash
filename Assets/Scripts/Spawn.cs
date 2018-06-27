@@ -15,16 +15,20 @@ public class Spawn : NetworkBehaviour {
 	public int numUnitsActive;
 	[SyncVar(hook="OnTime")]
 	public int timeUntilNextWave; 
+	[SyncVar(hook="OnLimitUpdate")]
+	public int playerUnitLimit; 
+	[SyncVar(hook="OnNumUnitSpawnUpdate")]
+	public int totalNumUnitsToSpawn = 0;
 
 	private int DELAYBETWEENWAVES = 20;
 
 	// upgrade bool array
-	private bool[] upgradesAcquired = {false, false, false, false};
+	private SyncListBool upgradesAcquired = new SyncListBool();
 
 	// List keeping track of how many of each unit to spawn. Order:
 	// Knight, KungFuFighter, ..
 	// Team one and two lists are inverted to preserve order of spawns
-	private int[] numOfEachUnitToSpawn = {0, 0, 40, 0, 0, 0, 0, 1, 0};
+	private int[] numOfEachUnitToSpawn = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 	private int[] unitPrices = {65, 50, 95, 100, 150, 165, 150, 250, 240};
 	public Unit[] unitPrefabs;
 	private string[] unitNames = {"Knight", "KungFuFighter", "Archer", "Crossbow", "Swordsman", "DualSwords", "Mage", "Hammer", "Ninja"};
@@ -39,14 +43,22 @@ public class Spawn : NetworkBehaviour {
 			Debug.Log("GM is null");
 		}
 		else{
+			// initialize all upgrades to false
+			for (int i = 0; i < 8; i++){
+				upgradesAcquired.Add(false);
+			}
 			if (playerId == 0){
 				GameManager.singleton.goldAmountTeamOne.text = playerGold.ToString();
-				GameManager.singleton.numUnitsTeamOne.text = numUnitsActive.ToString();
+				GameManager.singleton.numUnitsTeamOne.text = "Active Units: " + numUnitsActive.ToString();
+				GameManager.singleton.unitLimitTeamOne.text = "Unit Limit:  0/" + playerUnitLimit.ToString();
 			}
 			else if (playerId == 1){
 				GameManager.singleton.goldAmountTeamTwo.text = playerGold.ToString();
-				GameManager.singleton.numUnitsTeamTwo.text = numUnitsActive.ToString();
+				GameManager.singleton.numUnitsTeamTwo.text = "Active Units: " + numUnitsActive.ToString();
+				GameManager.singleton.unitLimitTeamTwo.text = "Unit Limit: 0/" + playerUnitLimit.ToString();
 			}
+			// base limit is 5
+			playerUnitLimit = 5;
     	}
 	}
 
@@ -63,16 +75,36 @@ public class Spawn : NetworkBehaviour {
 	void OnUnit(int num){
 		numUnitsActive = num;
 		if (playerId == 0){
-			GameManager.singleton.numUnitsTeamOne.text = numUnitsActive.ToString();
+			GameManager.singleton.numUnitsTeamOne.text = "Active Units: " + numUnitsActive.ToString();
 		}
 		else if (playerId == 1){
-			GameManager.singleton.numUnitsTeamTwo.text = numUnitsActive.ToString();
+			GameManager.singleton.numUnitsTeamTwo.text = "Active Units: " + numUnitsActive.ToString();
 		}
 	}
 
 	void OnTime(int newTime){
 		timeUntilNextWave = newTime;
 		GameManager.singleton.waveTimer.text = timeUntilNextWave.ToString();
+	}
+
+	void OnLimitUpdate(int newLimit){
+		playerUnitLimit = newLimit;
+		if (playerId == 0){
+			GameManager.singleton.unitLimitTeamOne.text = "Unit Limit: " + totalNumUnitsToSpawn.ToString() + "/" + playerUnitLimit.ToString();
+		}
+		else if (playerId == 1){
+			GameManager.singleton.unitLimitTeamTwo.text = "Unit Limit: " + totalNumUnitsToSpawn.ToString() + "/" + playerUnitLimit.ToString();
+		}
+	}
+
+	void OnNumUnitSpawnUpdate(int newNum){
+		totalNumUnitsToSpawn = newNum;
+		if (playerId == 0){
+			GameManager.singleton.unitLimitTeamOne.text = "Unit Limit: " + totalNumUnitsToSpawn.ToString() + "/" + playerUnitLimit.ToString();
+		}
+		else if (playerId == 1){
+			GameManager.singleton.unitLimitTeamTwo.text = "Unit Limit: " + totalNumUnitsToSpawn.ToString() + "/" + playerUnitLimit.ToString();
+		}
 	}
 
 	public void EnableComponents(){
@@ -162,10 +194,10 @@ public class Spawn : NetworkBehaviour {
 
 	[Command]
 	public void CmdIncreaseUnit(int index){
-		if (EnoughGoldForSpawn(unitPrices[index])){
-			Debug.Log("Increase unit " + index + " by 1");
+		if (EnoughGoldForSpawn(unitPrices[index]) && totalNumUnitsToSpawn < playerUnitLimit){
 			playerGold -= unitPrices[index];
 			ServerAddUnit(index);
+			totalNumUnitsToSpawn++;
 		}
 	}
 
@@ -186,12 +218,17 @@ public class Spawn : NetworkBehaviour {
 	}
 
 	[Command]
-	// upgrade =s
+	// if upgrade has not been bought yet, check gold amount
 	public void CmdPurchaseUpgrade(int index, int cost){
-		// if can buy 
-		if (!upgradesAcquired[index] && playerGold >= cost){
+		if (playerGold >= cost){
 			playerGold -= cost;
 			upgradesAcquired[index] = true;
+
+			// if upgrade is index 4, 5, 6, or 7 then it is a supply upgrade
+			if (index >= 4 && index <= 7){
+				// boost max supply by 5
+				playerUnitLimit += 5;
+			}
 		}
 	}
 
@@ -223,4 +260,10 @@ public class Spawn : NetworkBehaviour {
 	public void BuildingDestroyed(){
 		GameObject.Find("GameManager").GetComponent<GameManager>().MySpawnWasKilled();
 	}
+
+	// returns whether or not the upgrade has been bought already
+	public bool UpgradeStatus(int index){
+		return upgradesAcquired[index];
+	}
 }
+
