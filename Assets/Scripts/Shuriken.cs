@@ -9,7 +9,7 @@ public class Shuriken : NetworkBehaviour {
 	//private int layerTeamOne = 8;
 	//private int layerTeamTwo = 9;
 
-	private const int shurikenDamage = 7;
+	private int shurikenDamage = 7;
 	private bool active = false;
 	private float destroyTimer = 10f;
 
@@ -21,8 +21,9 @@ public class Shuriken : NetworkBehaviour {
     Quaternion realRotation;
     private float updateInterval;
 	
-	public void Initialize(int t){
+	public void Initialize(int t, int d){
 		team = t;
+		shurikenDamage = d;
 		if (team == 0){
 			gameObject.layer = 10;
 		}
@@ -92,9 +93,12 @@ public class Shuriken : NetworkBehaviour {
     	if (active){
 	        //ContactPoint contact = collision.contacts[0];
 	        if (collision.gameObject.tag == "Unit"){
-		        if (collision.gameObject != null){
+		        if (collision.gameObject.transform.GetComponent<Cannon>() != null){
+			    	collision.gameObject.transform.GetComponent<Cannon>().TakeDamage(shurikenDamage, 1);
+			    }
+			    else{
 			    	collision.gameObject.transform.GetComponent<Unit>().TakeDamage(shurikenDamage, 1);
-				}
+			    }
 			}
 			else if (collision.gameObject.tag == "Building"){
 		        if (collision.gameObject != null){

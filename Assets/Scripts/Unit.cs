@@ -47,6 +47,7 @@ public class Unit : NetworkBehaviour {
 	UnityEngine.AI.NavMeshAgent navAgent;
 	Quaternion targetRot;
 	GameObject enemySpawn;
+	GameObject enemyCannon;
 
 
 	// animation
@@ -97,7 +98,7 @@ public class Unit : NetworkBehaviour {
 			// Movement speed 0.6
 		}
 		else if (UNITNAME == "KungFuFighter"){
-			MAXHP = 18;
+			MAXHP = 20;
 			RANGE = 3.3f;
 			DELAYBETWEENATTACKS = 1.3f;
 			DAMAGE = 2;
@@ -110,18 +111,18 @@ public class Unit : NetworkBehaviour {
 			MAXHP = 14;
 			RANGE = 27f;
 			DELAYBETWEENATTACKS = 3f;
-			DAMAGE = 0;
+			DAMAGE = 3;
 			ROTATIONSPEED = 0.4f;
 			PHYSICALRESIST = 0;
 			MAGICRESIST = 0;
 			RANGED = true;
-			// Movement speed 0.6
+			// Movement speed 0.5
 		}
 		else if (UNITNAME == "Crossbow"){
 			MAXHP = 15;
 			RANGE = 22f;
 			DELAYBETWEENATTACKS = 4f;
-			DAMAGE = 0;
+			DAMAGE = 5;
 			ROTATIONSPEED = 0.4f;
 			PHYSICALRESIST = 0;
 			MAGICRESIST = 0;
@@ -132,9 +133,9 @@ public class Unit : NetworkBehaviour {
 			MAXHP = 30;
 			RANGE = 5f;
 			DELAYBETWEENATTACKS = 2.3f;
-			DAMAGE = 6;
+			DAMAGE = 5;
 			ROTATIONSPEED = 0.5f;
-			PHYSICALRESIST = 2;
+			PHYSICALRESIST = 1;
 			MAGICRESIST = 1;
 			// Movement speed 0.7
 		}
@@ -142,9 +143,9 @@ public class Unit : NetworkBehaviour {
 			MAXHP = 35;
 			RANGE = 2.5f;
 			DELAYBETWEENATTACKS = 1.5f;
-			DAMAGE = 5;
+			DAMAGE = 4;
 			ROTATIONSPEED = 0.5f;
-			PHYSICALRESIST = 2;
+			PHYSICALRESIST = 1;
 			MAGICRESIST = 1;
 			// Movement speed 0.7
 		}
@@ -163,7 +164,7 @@ public class Unit : NetworkBehaviour {
 			MAXHP = 70;
 			RANGE = 7f;
 			DELAYBETWEENATTACKS = 2.5f;
-			DAMAGE = 10;
+			DAMAGE = 8;
 			ROTATIONSPEED = 0.5f;
 			PHYSICALRESIST = 2;
 			MAGICRESIST = 2;
@@ -173,7 +174,7 @@ public class Unit : NetworkBehaviour {
 			MAXHP = 30;
 			RANGE = 15f;
 			DELAYBETWEENATTACKS = 2.7f;
-			DAMAGE = 0;
+			DAMAGE = 6;
 			ROTATIONSPEED = 0.5f;
 			PHYSICALRESIST = 1;
 			MAGICRESIST = 3;
@@ -277,7 +278,12 @@ public class Unit : NetworkBehaviour {
 	            	//Debug.Log(hitInfo.collider.gameObject.layer + ", " + gameObject.layer);
 
 	            	if (hitInfo.collider.gameObject.tag == "Unit"){
-	            		hitInfo.collider.transform.GetComponent<Unit>().TakeDamage(DAMAGE, 0);
+	            		if (hitInfo.collider.transform.GetComponent<Cannon>() != null){
+	            			hitInfo.collider.transform.GetComponent<Cannon>().TakeDamage(DAMAGE, 0);
+	            		}
+	            		else{
+	            			hitInfo.collider.transform.GetComponent<Unit>().TakeDamage(DAMAGE, 0);
+	            		}
 	            	}
 	            	else if (hitInfo.collider.gameObject.tag == "Building"){
 	            		hitInfo.collider.gameObject.transform.parent.GetComponent<Building>().TakeDamage(DAMAGE, 0);
@@ -293,7 +299,12 @@ public class Unit : NetworkBehaviour {
 		            if (hitUnits[unit].collider.gameObject.layer != gameObject.layer)
 		            {
 		            	if (hitUnits[unit].collider.gameObject.tag == "Unit"){
-		            		hitUnits[unit].collider.transform.GetComponent<Unit>().TakeDamage(DAMAGE, 0);
+							if (hitUnits[unit].collider.transform.GetComponent<Cannon>() != null){
+		            			hitUnits[unit].collider.transform.GetComponent<Cannon>().TakeDamage(DAMAGE, 0);
+		            		}
+		            		else{
+		            			hitUnits[unit].collider.transform.GetComponent<Unit>().TakeDamage(DAMAGE, 0);
+		            		}		            		
 		            	}
 		            	else if (hitUnits[unit].collider.gameObject.tag == "Building"){
 		            		hitUnits[unit].collider.gameObject.transform.parent.GetComponent<Building>().TakeDamage(DAMAGE, 0);
@@ -305,7 +316,7 @@ public class Unit : NetworkBehaviour {
 	}
 
 	/*
-	* Find enemy spawn
+	* Find enemy spawn and enemy cannon
 	*/
 	void FindEnemySpawn(){
 		// Use overlap sphere to find units in a certain range
@@ -316,6 +327,11 @@ public class Unit : NetworkBehaviour {
 			if (hitColliders[i].gameObject.tag == "Building"){
 				if (hitColliders[i].gameObject.transform.parent.GetComponent<Building>().MyTeam() != team){
 					enemySpawn = hitColliders[i].gameObject;
+				}
+			}
+			if (hitColliders[i].gameObject.GetComponent<Cannon>() != null){
+				if (hitColliders[i].gameObject.transform.GetComponent<Cannon>().GetTeam() != team){
+					enemyCannon = hitColliders[i].gameObject;
 				}
 			}
 		    i++;
@@ -367,19 +383,25 @@ public class Unit : NetworkBehaviour {
         float closestDistanceSqr = Mathf.Infinity;
         Vector3 currentPosition = transform.position;
         foreach(Transform potentialTarget in enemies)
-        {
-            Vector3 directionToTarget = potentialTarget.position - currentPosition;
-            float dSqrToTarget = directionToTarget.sqrMagnitude;
-            if(dSqrToTarget < closestDistanceSqr)
-            {
-                closestDistanceSqr = dSqrToTarget;
-                bestTarget = potentialTarget;
-            }
+        {	
+        	// dont look through cannons
+        	if (potentialTarget.gameObject.GetComponent<Unit>() != null){
+	            Vector3 directionToTarget = potentialTarget.position - currentPosition;
+	            float dSqrToTarget = directionToTarget.sqrMagnitude;
+	            if(dSqrToTarget < closestDistanceSqr)
+	            {
+	                closestDistanceSqr = dSqrToTarget;
+	                bestTarget = potentialTarget;
+	            }
+        	}
         }
      
      	if (bestTarget != null){
      		targetingBuilding = false;
         	return bestTarget.gameObject;
+    	}
+    	else if (enemyCannon != null){
+    		return enemyCannon;
     	}
     	else{
     		targetingBuilding = true;
@@ -425,7 +447,15 @@ public class Unit : NetworkBehaviour {
 				targetDestination = targetUnit.transform.position - Vector3.Normalize(dir) * RANGE;
 			}
 			else{
-				targetDestination = targetUnit.transform.position - Vector3.Normalize(dir) * (targetingBuilding ? RANGE + 1.8f : RANGE);
+				if (targetingBuilding){
+					targetDestination = targetUnit.transform.position - Vector3.Normalize(dir) * (RANGE + 1.8f);
+				}
+				else if (targetUnit.transform.GetComponent<Cannon>() != null){
+					targetDestination = targetUnit.transform.position - Vector3.Normalize(dir) * (RANGE + 1.2f);
+				}
+				else{
+					targetDestination = targetUnit.transform.position - Vector3.Normalize(dir) * RANGE;
+				}
 			}
 			// "Sticky" positioning, only set a new target position if the delta position is > 3
 			// if the new distance is too short then don't bother moving (prevents jitters)
@@ -459,8 +489,9 @@ public class Unit : NetworkBehaviour {
 		if(targetUnit != null)
 		{
 			if (!RANGED){
+				float effectiveRange = targetingBuilding ? RANGE + 2.0f : (targetUnit.transform.GetComponent<Cannon>() != null ? RANGE + 1.2f : RANGE);
 				// Turn towards unit if attacking, not moving, or if distance between target destination < range
-				if (!animator.GetBool("Moving") || attacking || Vector3.Distance(targetDestination, transform.position) < (targetingBuilding ? RANGE + 2.0f : RANGE)){
+				if (!animator.GetBool("Moving") || attacking || Vector3.Distance(targetDestination, transform.position) < effectiveRange){
 					Vector3 pos = targetUnit.transform.position - transform.position;
 					if (pos != Vector3.zero)
 						targetRot = Quaternion.LookRotation(pos);
@@ -503,8 +534,9 @@ public class Unit : NetworkBehaviour {
 
 			if(targetUnit != null)
 			{
+				float effectiveRange = targetingBuilding ? RANGE + 2.0f : (targetUnit.transform.GetComponent<Cannon>() != null ? RANGE + 1.2f : RANGE);
 				// if target is in range and attack is off cooldown then attack
-				if (Vector3.Distance(targetUnit.transform.position, transform.position) <= (targetingBuilding ? RANGE + 2.0f : RANGE) && attackCooldownTimer <= 0f){
+				if (Vector3.Distance(targetUnit.transform.position, transform.position) <= effectiveRange && attackCooldownTimer <= 0f){
 					Attack();
 				}
 			}
@@ -634,7 +666,7 @@ public class Unit : NetworkBehaviour {
 			Vector3 itemSpawnPos = new Vector3(transform.position.x, transform.position.y + 1.9f, transform.position.z);
 			Quaternion rot = transform.rotation * Quaternion.Euler(0, 90, 0);
 			newArrow = Instantiate(arrowPrefab, itemSpawnPos, rot);
-			newArrow.Initialize(team);
+			newArrow.Initialize(team, DAMAGE);
 			newArrow.GetComponent<Rigidbody>().useGravity = false;
 			NetworkServer.Spawn(newArrow.gameObject);
 		}
@@ -689,7 +721,7 @@ public class Unit : NetworkBehaviour {
 		Vector3 dir = targetUnit.transform.position - itemSpawnPos + Vector3.up * 2f + variance;
 		//Quaternion rot = Quaternion.LookRotation(dir);
 		Shuriken newShuriken = Instantiate(shurikenPrefab, itemSpawnPos, Quaternion.identity);
-		newShuriken.Initialize(team);
+		newShuriken.Initialize(team, DAMAGE);
 		NetworkServer.Spawn(newShuriken.gameObject);
 		//newShuriken.transform.Rotate(90, 0, 0);
 		newShuriken.GetComponent<Rigidbody>().AddForce(Vector3.Normalize(dir) * 40f, ForceMode.Impulse);

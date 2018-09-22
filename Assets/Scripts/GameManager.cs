@@ -35,6 +35,7 @@ public class GameManager : NetworkBehaviour {
 	public Spawn localPlayer;
 
 	private List<Spawn> players = new List<Spawn>();
+	private List<Cannon> cannons = new List<Cannon>();
 
 	//private int timeUntilNextWave;
 
@@ -52,6 +53,10 @@ public class GameManager : NetworkBehaviour {
 	public void AddPlayer(Spawn spawn){
 		players.Add(spawn);
 		if (players.Count == 2){
+			// set cannons 
+			cannons[0].SetEnemySpawn(players[1]);
+			cannons[1].SetEnemySpawn(players[0]);
+
 			// start the game, everyone joined
 			ServerStartGame();
 		}
@@ -59,6 +64,10 @@ public class GameManager : NetworkBehaviour {
 			// still waiting
 			ServerEnterGameState(0);
 		}
+	}
+
+	public void AddCannon(Cannon cannon){
+		cannons.Add(cannon);
 	}
 
 	public void RemovePlayer(Spawn spawn){
@@ -266,57 +275,73 @@ public class GameManager : NetworkBehaviour {
 	// -------------- UPGRADES -------------- //
 	public void PurchaseMiningTools(){
 		if (!localPlayer.UpgradeStatus(0)){
-			localPlayer.CmdPurchaseUpgrade(0, 120);
-			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			if (localPlayer.GetPlayerGold() > 120){
+				localPlayer.CmdPurchaseUpgrade(0, 120);
+				EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			}
 		}
 	}
 
 	public void OpenNewMine(){
 		if (!localPlayer.UpgradeStatus(1)){
-			localPlayer.CmdPurchaseUpgrade(1, 120);
-			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			if (localPlayer.GetPlayerGold() > 120){
+				localPlayer.CmdPurchaseUpgrade(1, 120);
+				EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			}
 		}
 	}
 
 	public void BuildGoldRefinery(){
 		if (!localPlayer.UpgradeStatus(2)){
-			localPlayer.CmdPurchaseUpgrade(2, 120);
-			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			if (localPlayer.GetPlayerGold() > 120){
+				localPlayer.CmdPurchaseUpgrade(2, 120);
+				EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			}		
 		}
 	}
 
 	public void HireAdditionalMiners(){
 		if (!localPlayer.UpgradeStatus(3)){
-			localPlayer.CmdPurchaseUpgrade(3, 120);
-			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			if (localPlayer.GetPlayerGold() > 120){
+				localPlayer.CmdPurchaseUpgrade(3, 120);
+				EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			}
 		}
 	}
 
 	public void IncreaseFoodSupply1(){
 		if (!localPlayer.UpgradeStatus(4)){
-			localPlayer.CmdPurchaseUpgrade(4, 50);
-			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			if (localPlayer.GetPlayerGold() > 50){
+				localPlayer.CmdPurchaseUpgrade(4, 50);
+				EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			}
 		}
 	}
 
 	public void IncreaseFoodSupply2(){
 		if (!localPlayer.UpgradeStatus(5)){
-			localPlayer.CmdPurchaseUpgrade(5, 50);
-			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			if (localPlayer.GetPlayerGold() > 50){
+				localPlayer.CmdPurchaseUpgrade(5, 50);
+				EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			}
 		}
 	}
 
 	public void IncreaseFoodSupply3(){
 		if (!localPlayer.UpgradeStatus(6)){
-			localPlayer.CmdPurchaseUpgrade(6, 50);
-			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			if (localPlayer.GetPlayerGold() > 50){
+				localPlayer.CmdPurchaseUpgrade(6, 50);
+				EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			}
 		}
 	}
 
 	public void IncreaseFoodSupply4(){
 		if (!localPlayer.UpgradeStatus(7)){
-			localPlayer.CmdPurchaseUpgrade(7, 50);
-			EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			if (localPlayer.GetPlayerGold() > 50){
+				localPlayer.CmdPurchaseUpgrade(7, 50);
+				EventSystem.current.currentSelectedGameObject.GetComponent<Button>().interactable = false;
+			}
 		}
 	}
 }

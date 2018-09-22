@@ -10,7 +10,7 @@ public class Arrow : NetworkBehaviour {
 	//private int layerTeamOne = 8;
 	//private int layerTeamTwo = 9;
 
-	private const int arrowDamage = 3;
+	private int arrowDamage = 3;
 	private bool active = false;
 	private float destroyTimer = 10f;
 
@@ -24,8 +24,9 @@ public class Arrow : NetworkBehaviour {
     Quaternion realRotation;
     private float updateInterval;
 
-	public void Initialize(int t){
+	public void Initialize(int t, int d){
 		team = t;
+		arrowDamage = d;
 		if (team == 0){
 			gameObject.layer = 10;
 		}
@@ -95,9 +96,12 @@ public class Arrow : NetworkBehaviour {
     	if (active){
 	        //ContactPoint contact = collision.contacts[0];
 	        if (collision.gameObject.tag == "Unit"){
-		        if (collision.gameObject != null){
+		        if (collision.gameObject.transform.GetComponent<Cannon>() != null){
+			    	collision.gameObject.transform.GetComponent<Cannon>().TakeDamage(arrowDamage, 0);
+			    }
+			    else{
 			    	collision.gameObject.transform.GetComponent<Unit>().TakeDamage(arrowDamage, 0);
-				}
+			    }
 			}
 			else if (collision.gameObject.tag == "Building"){
 		        if (collision.gameObject != null){

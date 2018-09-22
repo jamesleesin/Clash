@@ -40,7 +40,6 @@ public class Building : NetworkBehaviour {
 
 		if (hp > 0){
 			hp -= amount - (damageType == 0 ? PHYSICALRESIST : MAGICRESIST);
-			Debug.Log("take " + amount + " damage");
 			if (hp <= 0){
 				// game over for this team. Destroy the building from the local HUD
 				transform.GetComponent<Spawn>().BuildingDestroyed();

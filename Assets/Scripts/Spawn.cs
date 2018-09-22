@@ -29,7 +29,7 @@ public class Spawn : NetworkBehaviour {
 	// Knight, KungFuFighter, ..
 	// Team one and two lists are inverted to preserve order of spawns
 	private int[] numOfEachUnitToSpawn = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-	private int[] unitPrices = {65, 50, 95, 100, 150, 165, 150, 250, 240};
+	private int[] unitPrices = {65, 50, 95, 100, 175, 185, 150, 280, 270};
 	public Unit[] unitPrefabs;
 	private string[] unitNames = {"Knight", "KungFuFighter", "Archer", "Crossbow", "Swordsman", "DualSwords", "Mage", "Hammer", "Ninja"};
 
@@ -37,6 +37,8 @@ public class Spawn : NetworkBehaviour {
 	private int baseGoldGainPerTick = 2;
 
 	public GameObject[] componentsToDisable;
+
+	public Cannon myCannon;
 
 	public override void OnStartClient(){
 		if (GameManager.singleton == null){
@@ -207,6 +209,11 @@ public class Spawn : NetworkBehaviour {
 	}
 
 	[Command]
+	public void CmdGainCannonGold(){
+		playerGold += 200;
+	}
+
+	[Command]
 	// add player gold
 	public void CmdGainTimeGold(){
 		playerGold += baseGoldGainPerTick;
@@ -234,6 +241,9 @@ public class Spawn : NetworkBehaviour {
 
 
 	// -------------------- Utility functions -----------------------//
+	public int GetPlayerGold(){
+		return playerGold;
+	}
 
 	// return true if player has enough gold for spawn, else false
 	public bool EnoughGoldForSpawn(int amt){

@@ -95,9 +95,12 @@ public class Meteor : NetworkBehaviour {
     	if (active){
 	        //ContactPoint contact = collision.contacts[0];
 	        if (collision.gameObject.tag == "Unit"){
-		        if (collision.gameObject != null){
+		        if (collision.gameObject.transform.GetComponent<Cannon>() != null){
+			    	collision.gameObject.transform.GetComponent<Cannon>().TakeDamage(meteorDamage, 1);
+			    }
+			    else{
 			    	collision.gameObject.transform.GetComponent<Unit>().TakeDamage(meteorDamage, 1);
-				}
+			    }
 			}
 			else if (collision.gameObject.tag == "Building"){
 		        if (collision.gameObject != null){
@@ -116,6 +119,7 @@ public class Meteor : NetworkBehaviour {
     	Vector3 flameSpawnPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
 		Quaternion rot = Quaternion.Euler(0, 0, 0);
 		Flame newFlame = Instantiate(flamePrefab, flameSpawnPos, rot);
+		newFlame.Initialize(team);
 		newFlame.transform.Rotate(-90, 0, 0);
 		NetworkServer.Spawn(newFlame.gameObject);
     }

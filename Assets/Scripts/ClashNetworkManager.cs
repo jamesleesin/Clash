@@ -10,6 +10,9 @@ public class ClashNetworkManager : NetworkManager {
 	Spawn[] playerSlots = new Spawn[2];
 	Vector3 spawnLocation1 = new Vector3(-11.3f, 5f, -18.7f);
 	Vector3 spawnLocation2 = new Vector3(-6.29f, 5f, 121.73f);
+	Vector3 cannonLocation1 = new Vector3(-11.6f, 5f, 0f);
+	Vector3 cannonLocation2 = new Vector3(-6.53f, 5f, 100.9f);
+	public Cannon cannonPrefab;
 	private NetworkManager networkManager;
 
 	[SerializeField]
@@ -90,17 +93,24 @@ public class ClashNetworkManager : NetworkManager {
 			{
 				Vector3 pos;
 				Quaternion rot;
+				Vector3 cannonPos;
 
 				if (slot == 0){
 					pos = spawnLocation1;
 					rot = Quaternion.identity;
+					cannonPos = cannonLocation1;
 				}
 				else{
 					pos = spawnLocation2;
 					rot = Quaternion.Euler(0, 180, 0);
+					cannonPos = cannonLocation2;
 				}
 				var playerObj = (GameObject)GameObject.Instantiate(playerPrefab, pos, rot);
 				var player = playerObj.GetComponent<Spawn>();
+				Cannon newCannon = GameObject.Instantiate(cannonPrefab, cannonPos, rot);
+				newCannon.Initialize(slot);
+				NetworkServer.Spawn(newCannon.gameObject);		
+				GameManager.singleton.AddCannon(newCannon);
 
 				player.playerId = slot;
 				playerSlots[slot] = player;
