@@ -239,8 +239,11 @@ public class Spawn : NetworkBehaviour {
 		}
 	}
 
-
 	// -------------------- Utility functions -----------------------//
+	public int GetBuildingHp(){
+		return transform.GetComponent<Building>().GetHp();
+	}
+
 	public int GetPlayerGold(){
 		return playerGold;
 	}

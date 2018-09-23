@@ -57,14 +57,11 @@
 -MAGIC RESIST: 3
 
 1.3
-BUGS THAT NEED TO BE FIXED
--game ending shows Victory for both players
--the hit detection for cannon and spawn are bugged for melee units. Ranged is fine.
--If client loses, both players show victory. If host loses, host shows defeat and client shows victory. If host wins, both players get a win. 
 
 ///// BugFixes /////
 -Fixed a bug where shop options grey out when clicked, even if use cannot buy them
 -Fixed issue where units don't retarget ranged units if they are hitting the cannon
+-Fixed issue where if host wins the client also gets the victory message
 
 ////// Gameplay //////
 -Raise Arbalist damage from 3->5

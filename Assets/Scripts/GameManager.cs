@@ -24,10 +24,6 @@ public class GameManager : NetworkBehaviour {
 	public Text numUnitsTeamTwo;
 	public Text waveTimer;
 
-	// victory or defeat
-	public Text victoryResultText;
-	public Text defeatResultText;
-
 	// upgrades shop
 	public GameObject upgradesShop;
 
@@ -100,7 +96,10 @@ public class GameManager : NetworkBehaviour {
 				break;
 			// game ended
 			case 2:
-				ClientState_GameOver();
+				ClientState_GameOver(0);
+				break;
+			case 3:
+				ClientState_GameOver(1);
 				break;
 		}
 			
@@ -125,12 +124,15 @@ public class GameManager : NetworkBehaviour {
 
 	[Client]
 	// need to show game results to all clients as well
-	void ClientState_GameOver(){
-		if (localPlayer.transform.GetComponent<Building>().GetHp()<=0){
-			defeatResultText.gameObject.SetActive(true);
+	void ClientState_GameOver(int didIWin){
+		if (isServer)
+			return;
+			
+		if (didIWin == 0){
+			GameObject.Find("ResultVictory").GetComponent<Text>().enabled = true;
 		}
 		else{
-			victoryResultText.gameObject.SetActive(true);
+			GameObject.Find("ResultDefeat").GetComponent<Text>().enabled = true;
 		}
 	}
 
@@ -176,7 +178,6 @@ public class GameManager : NetworkBehaviour {
 		}
 	}
 
-
 	// ----------------------------- Utility Functions ---------------//
 	// return function for local spawn
 	public Spawn GetLocalSpawn(){
@@ -185,14 +186,20 @@ public class GameManager : NetworkBehaviour {
 
 	// Players losing their base, show defeat or victory screen
 	public void MySpawnWasKilled(){
-		if (localPlayer.transform.GetComponent<Building>().GetHp()<=0){
-			defeatResultText.gameObject.SetActive(true);
+		for(int p = 0; p < players.Count; p++){
+			// check HP of each player
+			if (players[p].GetBuildingHp() <= 0){
+				// this player lost
+				if (players[p] == localPlayer){
+					GameObject.Find("ResultDefeat").GetComponent<Text>().enabled = true;
+					ServerEnterGameState(2);
+				}
+				else{
+					GameObject.Find("ResultVictory").GetComponent<Text>().enabled = true;
+					ServerEnterGameState(3);
+				}
+			}
 		}
-		else{
-			victoryResultText.gameObject.SetActive(true);
-		}
-		// enter game over state
-		ServerEnterGameState(2);
 	}
 
 	// ------------------------ Client UI Hooks -------------------------------
